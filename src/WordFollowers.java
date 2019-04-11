@@ -6,20 +6,16 @@ import javafx.util.Pair;
 // Class to save transitions from a word (sort of like a Markov Chain "Node")
 // Has sorted list of most likely transitions and hashMap that maps that list (to ensure constant access time)
 public class WordFollowers {
-	private String word;
-	private HashMap<String, Integer> followerPositions;   //points to sortedFollowers
-	private ArrayList<Pair<String, Integer>> sortedFollowers;
-	private int totalTransitions;
+	public String word;
+	public HashMap<String, Integer> followerPositions;   //points to sortedFollowers
+	public ArrayList<Pair<String, Integer>> sortedFollowers;
+	public int totalTransitions;
 	
 	public WordFollowers(String thisword) {
 		word = thisword;
 		followerPositions = new HashMap<String, Integer>();
 		sortedFollowers = new ArrayList<Pair<String, Integer>>();
 		totalTransitions = 0;
-	}
-	
-	public String getWord() {
-		return word;
 	}
 	
 	public void createFollower(String follower) {
@@ -31,22 +27,26 @@ public class WordFollowers {
 	public void addFollowInstance(String follower) {
 		totalTransitions++;
 		Integer position = followerPositions.get(follower);
-		if(position == null) {
+
+		if (position == null) {
 			createFollower(follower);
-		} else {
-			int instances = sortedFollowers.get(position).getValue()+1;
-			int swap = position;
-			while ((swap!=0) || (sortedFollowers.get(swap-1).getValue()<=instances)) {
-				swap = swap - 1;
-			}
-			Pair<String, Integer> carry = sortedFollowers.get(swap);
-			sortedFollowers.set(swap, new Pair<String, Integer>(follower, instances));
-			sortedFollowers.set(position, carry);
+			return;
+		}
+		
+		int instances = sortedFollowers.get(position).getValue()+1;
+		int swap = position;
+		while (!((swap==0) || (sortedFollowers.get(swap-1).getValue()>=instances))) {
+			swap = swap - 1;
+		}
+		Pair<String, Integer> carry = sortedFollowers.get(swap);
+		Pair<String, Integer> thisone = new Pair<String, Integer>(follower, instances);
+		sortedFollowers.set(position, carry);
+		sortedFollowers.set(swap, thisone);
+		
+		followerPositions.put(carry.getKey(), position);
+		followerPositions.put(follower, swap);
 			
-			followerPositions.put(carry.getKey(), position);
-			followerPositions.put(follower, swap);
-			
-		}				
+					
 	}
 	
 	public int getTransitionsTo(String follower) {  //Number of transition instances
