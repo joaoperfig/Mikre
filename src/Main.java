@@ -33,14 +33,14 @@ public class Main {
         batata.addFollowInstance("e");
         batata.addFollowInstance("e");
         batata.addFollowInstance("e");
-        batata.addFollowInstance("e");
-        batata.addFollowInstance("e");
-        batata.addFollowInstance("e");
-        batata.addFollowInstance("e");
+
         
         for (Pair<String, Integer> p : batata.sortedFollowers) {
         	System.out.println(p.getKey());
         	System.out.println(p.getValue());
         }
+        
+        System.out.println(batata.getSortedIndexOf("com"));
+        System.out.println(batata.getSortedIndexOf("ola"));
     }
 }

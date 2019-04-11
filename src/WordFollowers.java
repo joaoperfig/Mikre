@@ -67,7 +67,7 @@ public class WordFollowers {
 		}	
 	}
 	
-	public int getSortedIndexOf(String follower) {
+	public Integer getSortedIndexOf(String follower) {
 		return followerPositions.get(follower);
 	}
 	
