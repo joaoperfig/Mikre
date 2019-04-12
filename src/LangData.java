@@ -1,7 +1,10 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LangData {
+import javafx.util.Pair;
+
+public class LangData implements Serializable {
 	private WordFollowers general;                   //General index of all known words
 	private WordFollowers starters;                  //Index of words at start of sentences
 	public HashMap<String, WordFollowers> database;  //Markov chain of words
@@ -45,6 +48,31 @@ public class LangData {
 				}
 				lastWord = word;
 			}
+		}
+	}
+	
+	public void showBasicInfo() {
+		System.out.println("Database info:");
+		System.out.println("Total words: "+database.size());
+		int transitions = starters.totalTransitions;
+		for (Pair<String, Integer> p: general.sortedFollowers) {
+			String word = p.getKey();
+			System.out.println(word);
+			transitions += database.get(p).totalTransitions;
+		}
+		System.out.println("Total transitions: "+transitions);
+		System.out.println("Most common words and most likely sentences starting from them:");
+		for (int i =0; i<30; i++) {
+			StringBuilder sb = new StringBuilder();
+			String word = getWordAtGlobalIndex(i);
+			sb.append("   ");
+			sb.append(word);
+			for (int j=0; j<10; j++) {
+				word = database.get(word).getAtSortedIndex(0);
+				sb.append(" ");
+				sb.append(word);
+			}
+			System.out.println(sb.toString());
 		}
 	}
 }
