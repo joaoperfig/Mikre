@@ -1,17 +1,28 @@
 import java.util.ArrayList;
 
+// Class for corpus processing, not for compression
 public class CleanText {
 	public ArrayList<ArrayList<String>> sentences;
-	private static String sentenceDividers = ".!?:;\n";
-	private static String lowerCases = "abcdefghijklmnopqrstuvwxyz";
-	private static String upperCases = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static String sentenceDividers = ",.!?:;\n()<>{}[]"; //comma was included after some reformulation on what is a sentence
+	private static String lowerCases = "abcdefghijklmnopqrstuvwxyz'-";
+	private static String upperCases = "ABCDEFGHIJKLMNOPQRSTUVWXYZ'-";
+	public int totalwords;
+	public int capitalized;
+	public CaseData caseData;
 	
 	public CleanText() {
 		sentences = new ArrayList<ArrayList<String>>();
+		totalwords = 0;
+		capitalized = 0;
+		caseData = new CaseData();
 	}
 	
 	public CleanText(String dirtyText) {
+		totalwords = 0;
+		capitalized = 0;
 		sentences = new ArrayList<ArrayList<String>>();
+		caseData = new CaseData();
+		boolean iscapital = false;
 		
 		String allCases = lowerCases.concat(upperCases);
 		
@@ -22,6 +33,12 @@ public class CleanText {
 		    if (sentenceDividers.indexOf(c)>=0) { //c is a sentence divider
 		    	if (wordBuilder.length() != 0) {
 		    		thisSentence.add(wordBuilder.toString());
+		    		totalwords++;
+		    		if (iscapital) {
+		    			caseData.addUpperWord(wordBuilder.toString());
+		    		} else {
+		    			caseData.addLowerWord(wordBuilder.toString());
+		    		}
 		    		wordBuilder = new StringBuilder();
 		    	}
 		    	if (thisSentence.size() != 0) {
@@ -32,11 +49,26 @@ public class CleanText {
 		    	int ui = upperCases.indexOf(c);
 		    	if (ui >= 0) {
 		    		c = lowerCases.charAt(ui); //turn c lowercase
+		    		if(wordBuilder.length() == 0) {
+		    			capitalized++; // first letter is capital
+		    			iscapital = true;
+		    		}
+		    	} else {
+		    		if(wordBuilder.length() == 0) {
+		    			// first letter is NOT capital
+		    			iscapital = false;
+		    		}
 		    	}
 		    	wordBuilder.append(c);
 		    } else { //c is trash or blankspace
 		    	if (wordBuilder.length() != 0) {
 		    		thisSentence.add(wordBuilder.toString());
+		    		totalwords++;
+		    		if (iscapital) {
+		    			caseData.addUpperWord(wordBuilder.toString());
+		    		} else {
+		    			caseData.addLowerWord(wordBuilder.toString());
+		    		}
 		    		wordBuilder = new StringBuilder();
 		    	}
 		    }
@@ -51,6 +83,7 @@ public class CleanText {
     		thisSentence = new ArrayList<String>();
     	}		
 	}
+	
 	
 	public void appendText(String dirtyText) {
 		append(new CleanText(dirtyText));

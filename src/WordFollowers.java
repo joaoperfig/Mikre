@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.util.Pair;
@@ -5,17 +6,26 @@ import javafx.util.Pair;
 
 // Class to save transitions from a word (sort of like a Markov Chain "Node")
 // Has sorted list of most likely transitions and hashMap that maps that list (to ensure constant access time)
-public class WordFollowers {
+public class WordFollowers implements Serializable {
 	public String word;
 	public HashMap<String, Integer> followerPositions;   //points to sortedFollowers
 	public ArrayList<Pair<String, Integer>> sortedFollowers;
 	public int totalTransitions;
+	public HuffmanTree compressed;
 	
 	public WordFollowers(String thisword) {
 		word = thisword;
 		followerPositions = new HashMap<String, Integer>();
 		sortedFollowers = new ArrayList<Pair<String, Integer>>();
 		totalTransitions = 0;
+	}
+	
+	public void UpdateHuffman() {
+		if(sortedFollowers.isEmpty()) {
+			compressed = null;
+		} else {
+			compressed = new HuffmanTree(sortedFollowers);
+		}
 	}
 	
 	public void createFollower(String follower) {
@@ -45,7 +55,6 @@ public class WordFollowers {
 		
 		followerPositions.put(carry.getKey(), position);
 		followerPositions.put(follower, swap);
-			
 					
 	}
 	
@@ -65,6 +74,10 @@ public class WordFollowers {
 		} else {	
 			return sortedFollowers.get(position).getValue()/totalTransitions;
 		}	
+	}
+	
+	public boolean hasWord(String follower) {
+		return followerPositions.containsKey(follower);
 	}
 	
 	public Integer getSortedIndexOf(String follower) {

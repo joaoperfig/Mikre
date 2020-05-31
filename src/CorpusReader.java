@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 public class CorpusReader {
 	
 	public static void main(String[] args) {
-		
+		long startTime = System.currentTimeMillis();
 		LangData ld = new LangData();
 		String foldern = "data/corpus/";
 		File folder = new File(foldern);
@@ -44,7 +44,18 @@ public class CorpusReader {
 				System.out.println("Ignoring folder: " + listOfFiles[i].getName());
 			}
 		}
-		
+		ld.UpdateHuffman();
 		ld.showBasicInfo();
+		long durationseconds = (System.currentTimeMillis() - startTime)/100;
+		System.out.print("Process took ");
+		System.out.print(durationseconds);
+		System.out.println(" seconds.");
+		System.out.println("Saving...");
+		ld.saveTofile("data/english.mkrd");
+		durationseconds = (System.currentTimeMillis() - startTime)/100;
+		System.out.print("Total process took ");
+		System.out.print(durationseconds);
+		System.out.println(" seconds.");
+
 	}
 }
